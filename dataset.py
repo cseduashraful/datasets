@@ -54,7 +54,7 @@ def load_edgelist_mooc(fname: str) -> pd.DataFrame:
     dst = df.iloc[:, 2].values.astype(int)
     # dst += int(src.max()) + 1
     t = df.iloc[:, 3].values
-    msg = df.iloc[:, 4:].values
+    msg = np.ones((t.shape[0], 1)) #df.iloc[:, 4:].values
     idx = np.arange(t.shape[0])
     w = np.ones(t.shape[0])
 
@@ -94,6 +94,9 @@ class LinkPropPredDataset(object):
         # check if the evaluatioin metric are specified
         if self.name in DATA_EVAL_METRIC_DICT:
             self.metric = DATA_EVAL_METRIC_DICT[self.name]
+            # breakpoint()
+        elif self.name == "mooc" or self.name == "lastfm":
+            self.metric = "mrr"
         else:
             self.metric = None
             print(
