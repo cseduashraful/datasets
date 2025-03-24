@@ -38,6 +38,31 @@ from tgb.utils.utils import save_pkl, load_pkl
 from tgb.utils.utils import add_inverse_quadruples
 
 
+def load_edgelist_mooc(fname: str) -> pd.DataFrame:
+    """
+    loading wikipedia dataset into pandas dataframe
+    similar processing to
+    https://pytorch-geometric.readthedocs.io/en/latest/_modules/torch_geometric/datasets/jodie.html
+
+    Parameters:
+        fname: str, name of the input file
+    Returns:
+        df: a pandas dataframe containing the edgelist data
+    """
+    df = pd.read_csv(fname, skiprows=1, header=None)
+    src = df.iloc[:, 1].values.astype(int)
+    dst = df.iloc[:, 2].values.astype(int)
+    # dst += int(src.max()) + 1
+    t = df.iloc[:, 3].values
+    msg = df.iloc[:, 4:].values
+    idx = np.arange(t.shape[0])
+    w = np.ones(t.shape[0])
+
+    return pd.DataFrame({"u": src, "i": dst, "ts": t, "idx": idx, "w": w}), msg, None
+
+
+
+
 class LinkPropPredDataset(object):
     def __init__(
         self,
@@ -99,7 +124,7 @@ class LinkPropPredDataset(object):
             self.meta_dict["nodeTypeFile"] = self.root + "/" + self.name + "_nodetype.csv"
         else:
             self.meta_dict["nodeTypeFile"] = None
-        
+        # breakpoint()
         self.meta_dict["val_ns"] = self.root + "/" + self.name + "_val_ns.pkl"
         self.meta_dict["test_ns"] = self.root + "/" + self.name + "_test_ns.pkl"
 
@@ -328,9 +353,12 @@ class LinkPropPredDataset(object):
                 df, edge_feat, node_ids = csv_to_forum_data(self.meta_dict["fname"])
             elif self.name == "thgl-software":
                 df, edge_feat, node_ids = csv_to_thg_data(self.meta_dict["fname"])
+            elif self.name == "mooc":
+                df, edge_feat, node_ids = load_edgelist_mooc(self.meta_dict["fname"])
             else:
                 raise ValueError(f"Dataset {self.name} not found.")
 
+            # breakpoint()
             save_pkl(edge_feat, OUT_EDGE_FEAT)
             df.to_pickle(OUT_DF)
             if self.meta_dict["nodefile"] is not None:
@@ -353,7 +381,7 @@ class LinkPropPredDataset(object):
 
         # check if path to file is valid
         df, edge_feat, node_feat = self.generate_processed_files()
-        breakpoint()
+        # breakpoint()
         #* design choice, only stores the original edges not the inverse relations on disc
         if ("tkgl" in self.name):
             df = add_inverse_quadruples(df)
@@ -617,9 +645,10 @@ class LinkPropPredDataset(object):
 
 def main():
 
-    name = "tgbl-wiki"
+    name = "mooc"
     dataset = LinkPropPredDataset(name=name, root="datasets", preprocess=True)
     dataset.edge_type
+    breakpoint()
 
 
 
