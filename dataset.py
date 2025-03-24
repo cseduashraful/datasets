@@ -60,6 +60,7 @@ class LinkPropPredDataset(object):
             self.url = DATA_URL_DICT[self.name]
         elif self.name == "mooc":
             self.url = "https://github.com/cseduashraful/datasets/raw/main/temporallinkpred/mooc/mooc.zip"
+            # https://github.com/cseduashraful/datasets/blob/main/temporallinkpred/mooc/mooc.zip
         else:
             self.url = None
             print(f"Dataset {self.name} url not found, download not supported yet.")
@@ -352,7 +353,7 @@ class LinkPropPredDataset(object):
 
         # check if path to file is valid
         df, edge_feat, node_feat = self.generate_processed_files()
-
+        breakpoint()
         #* design choice, only stores the original edges not the inverse relations on disc
         if ("tkgl" in self.name):
             df = add_inverse_quadruples(df)
@@ -616,7 +617,7 @@ class LinkPropPredDataset(object):
 
 def main():
 
-    name = "mooc"
+    name = "tgbl-wiki"
     dataset = LinkPropPredDataset(name=name, root="datasets", preprocess=True)
     dataset.edge_type
 
