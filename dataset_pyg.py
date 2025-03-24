@@ -350,7 +350,7 @@ class PyGLinkPropPredDataset(Dataset):
 
 def main():
 
-    name = "mooc"
+    name = "lastfm"
     dataset = PyGLinkPropPredDataset(name=name, root="datasets")
     # dataset.edge_type
     breakpoint()

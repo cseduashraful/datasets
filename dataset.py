@@ -85,6 +85,8 @@ class LinkPropPredDataset(object):
             self.url = DATA_URL_DICT[self.name]
         elif self.name == "mooc":
             self.url = "https://github.com/cseduashraful/datasets/raw/main/temporallinkpred/mooc/mooc.zip"
+        elif self.name == "lastfm":
+            self.url = "https://github.com/cseduashraful/datasets/raw/main/temporallinkpred/lastfm/lastfm.zip"
             # https://github.com/cseduashraful/datasets/blob/main/temporallinkpred/mooc/mooc.zip
         else:
             self.url = None
@@ -356,7 +358,7 @@ class LinkPropPredDataset(object):
                 df, edge_feat, node_ids = csv_to_forum_data(self.meta_dict["fname"])
             elif self.name == "thgl-software":
                 df, edge_feat, node_ids = csv_to_thg_data(self.meta_dict["fname"])
-            elif self.name == "mooc":
+            elif self.name == "mooc" or self.name == "lastfm":
                 df, edge_feat, node_ids = load_edgelist_mooc(self.meta_dict["fname"])
             else:
                 raise ValueError(f"Dataset {self.name} not found.")
@@ -648,7 +650,7 @@ class LinkPropPredDataset(object):
 
 def main():
 
-    name = "mooc"
+    name = "lastfm"
     dataset = LinkPropPredDataset(name=name, root="datasets", preprocess=True)
     dataset.edge_type
     breakpoint()
