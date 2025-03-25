@@ -37,6 +37,18 @@ from tgb.utils.pre_process import (
 from tgb.utils.utils import save_pkl, load_pkl
 from tgb.utils.utils import add_inverse_quadruples
 
+def load_edgelist_emailEucore(fname: str) -> pd.DataFrame:
+    df = pd.read_csv(fname, sep='\s+', header=None)#pd.read_csv(fname, skiprows=1, header=None)
+    src = df.iloc[:, 0].values.astype(int)
+    dst = df.iloc[:, 1].values.astype(int)
+    # dst += int(src.max()) + 1
+    t = df.iloc[:, 2].values
+    msg = np.ones((t.shape[0], 1)) #df.iloc[:, 4:].values
+    idx = np.arange(t.shape[0])
+    w = np.ones(t.shape[0])
+    # breakpoint()
+    return pd.DataFrame({"u": src, "i": dst, "ts": t, "idx": idx, "w": w}), msg, None
+
 
 def load_edgelist_mooc(fname: str) -> pd.DataFrame:
     """
@@ -85,6 +97,8 @@ class LinkPropPredDataset(object):
             self.url = DATA_URL_DICT[self.name]
         elif self.name == "mooc":
             self.url = "https://github.com/cseduashraful/datasets/raw/main/temporallinkpred/mooc/mooc.zip"
+        elif self.name == "emailEucore":
+            self.url = "https://github.com/cseduashraful/datasets/raw/main/temporallinkpred/emailEucore/emailEucore.zip"
         elif self.name == "lastfm":
             self.url = "https://github.com/cseduashraful/datasets/raw/main/temporallinkpred/lastfm/lastfm.zip"
             # https://github.com/cseduashraful/datasets/blob/main/temporallinkpred/mooc/mooc.zip
@@ -97,7 +111,7 @@ class LinkPropPredDataset(object):
         if self.name in DATA_EVAL_METRIC_DICT:
             self.metric = DATA_EVAL_METRIC_DICT[self.name]
             # breakpoint()
-        elif self.name == "mooc" or self.name == "lastfm":
+        elif self.name == "mooc" or self.name == "lastfm" or self.name == "emailEucore":
             self.metric = "mrr"
         else:
             self.metric = None
@@ -360,6 +374,8 @@ class LinkPropPredDataset(object):
                 df, edge_feat, node_ids = csv_to_thg_data(self.meta_dict["fname"])
             elif self.name == "mooc" or self.name == "lastfm":
                 df, edge_feat, node_ids = load_edgelist_mooc(self.meta_dict["fname"])
+            elif self.name == "emailEucore":
+                df, edge_feat, node_ids = load_edgelist_emailEucore(self.meta_dict['fname'])
             else:
                 raise ValueError(f"Dataset {self.name} not found.")
 
@@ -650,7 +666,7 @@ class LinkPropPredDataset(object):
 
 def main():
 
-    name = "lastfm"
+    name = "emailEucore"#"lastfm"
     dataset = LinkPropPredDataset(name=name, root="datasets", preprocess=True)
     dataset.edge_type
     breakpoint()
